@@ -55,7 +55,7 @@ class DatabaseConnector(ABC):
         Ejecuta una consulta y devuelve un DataFrame
 
         Args:
-            query: Consulta SQL a ejecutar
+            query: Consulta SQL a ejecutar (usar placeholders para parámetros)
             params: Parámetros para la consulta
 
         Returns:
@@ -63,13 +63,12 @@ class DatabaseConnector(ABC):
         """
         with self.connection() as conn:
             try:
-                query = query.format(**params)
-                result = pd.read_sql(query, conn)
+                result = pd.read_sql(query, conn, params=params)
                 return result
             except Exception as e:
                 self.logger.error("Error en la consulta: %s", str(e))
                 raise QueryError(f"Error en la consulta: {str(e)}") from e
-    
+
     @abstractmethod
     def execute_insert_df(
         self,
