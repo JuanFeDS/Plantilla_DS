@@ -1,6 +1,20 @@
 {
-    "project_title": "Cookiecutter Personal",
-    "project_slug": "{{ cookiecutter.project_title.lower().replace(' ', '_').replace('-', '_') }}",
-    "project_description": "Descripción del proyecto",
-    "environment_manager": ["virtualenv", "poetry", "none"]
+    "full_name": "JuanfeDS",
+    "email": "jmartinezbernal02@email.com",
+    "github_username": "juanfeds",
+    "project_title": "Plantilla Proyectos de datos",
+    "project_slug": "{{ cookiecutter.project_title|lower|replace(' ', '_')|replace('-', '_') }}",
+    "project_description": "Proyecto de datos listo para producción",
+    "repository_url": "https://github.com/mi_org/mi_repo",
+    "python_version": ["3.11", "3.10", "3.9"],
+    "license": ["MIT", "Apache-2.0", "Proprietary"],
+    "package_manager": ["poetry", "pip", "uv"],
+    "environment_manager": ["virtualenv", "conda", "pipenv", "none"],
+    "include_fastapi": ["y", "n"],
+    "include_notebooks": ["y", "n"],
+    "include_docs": ["y", "n"],
+    "include_slack_notifications": ["y", "n"],
+    "default_branch": "main",
+    "initial_model_name": "baseline_model",
+    "use_docker": ["y", "n"]
 }
