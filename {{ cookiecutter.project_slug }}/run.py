@@ -1,7 +1,7 @@
 """ Run the main function."""
 from scripts.model_evaluation import model_evaluation
 
-from src.utils.logger.logger import get_logger
+from src.logger import get_logger
 
 def run():
     """Run the main function."""
@@ -11,4 +11,4 @@ def run():
     model_evaluation()
 
 if __name__ == '__main__':
-    run()   
+    run()

@@ -9,16 +9,15 @@ from pathlib import Path
 
 import oracledb
 import pandas as pd
-
 from dotenv import load_dotenv
+
+from src.bd.base import DatabaseConnector, QueryError, DatabaseError
 from src.config.settings import DB_CONFIG
+from src.logger import get_logger
 
 # Cargar variables de entorno desde el archivo .env
 env_path = Path(__file__).parent.parent.parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
-
-from src.bd.base import DatabaseConnector, QueryError, DatabaseError
-from src.utils.logger.logger import get_logger
 
 
 class OracleConnector(DatabaseConnector):
@@ -91,7 +90,7 @@ class OracleConnector(DatabaseConnector):
                 query = query.format(**params) if params else query
                 df = pd.read_sql(query, con=self._connection)
                 return df
-            
+
         except Exception as error:
             error_msg = f"Error al ejecutar la consulta: {str(error)}"
             self.logger.error(error_msg)
