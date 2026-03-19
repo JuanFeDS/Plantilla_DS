@@ -1,11 +1,12 @@
 {
-    "full_name": "JuanfeDS",
-    "email": "jmartinezbernal02@email.com",
-    "github_username": "juanfeds",
-    "project_title": "Plantilla Proyectos de datos",
+    "project_title": "Mi Proyecto DS",
     "project_slug": "{{ cookiecutter.project_title|lower|replace(' ', '_')|replace('-', '_') }}",
-    "project_description": "Proyecto de datos listo para producción",
-    "repository_url": "https://github.com/mi_org/mi_repo",
+    "project_description": "Proyecto de ciencia de datos",
+    "full_name": "Data Scientist",
+    "email": "scientist@example.com",
+    "github_username": "datascientist",
+    "organization": "Mi Empresa",
+    "repository_url": "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}",
     "python_version": ["3.11", "3.10", "3.9"],
     "license": ["MIT", "Apache-2.0", "Proprietary"],
     "package_manager": ["poetry", "pip", "uv"],
@@ -13,8 +14,8 @@
     "include_fastapi": ["y", "n"],
     "include_notebooks": ["y", "n"],
     "include_docs": ["y", "n"],
-    "include_slack_notifications": ["y", "n"],
+    "include_slack_notifications": ["n", "y"],
     "default_branch": "main",
     "initial_model_name": "baseline_model",
-    "use_docker": ["y", "n"]
+    "use_docker": ["n", "y"]
 }

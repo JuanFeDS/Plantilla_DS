@@ -27,7 +27,14 @@ RESET_ALL = "\x1b[0m"
 def run_command(cmd, error_msg=None, check=False):
     """Ejecuta comando con manejo de errores."""
     try:
-        result = subprocess.run(cmd, check=check, capture_output=True, text=True)
+        result = subprocess.run(
+            cmd, 
+            check=check, 
+            capture_output=True, 
+            text=True,
+            encoding='utf-8',
+            errors='replace'
+        )
         return result.returncode == 0
     except subprocess.CalledProcessError as e:
         if error_msg:
