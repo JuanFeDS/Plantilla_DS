@@ -5,7 +5,6 @@
     "include_fastapi": ["y", "n"],
     "include_notebooks": ["y", "n"],
     "include_docs": ["y", "n"],
-
     "include_slack_notifications": ["n", "y"],
     "full_name": "Data Scientist",
     "email": "scientist@example.com",

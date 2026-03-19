@@ -54,7 +54,7 @@ class DataPipeline:
             DataFrame con datos cargados
         """
         file_ext = Path(source).suffix.lower()
-        
+
         if file_ext == '.csv':
             self.data = pd.read_csv(source, **kwargs)
         elif file_ext in ['.xlsx', '.xls']:
@@ -63,7 +63,7 @@ class DataPipeline:
             self.data = pd.read_parquet(source, **kwargs)
         else:
             raise ValueError(f"Formato no soportado: {file_ext}")
-        
+
         return self.data
 
     def validate_quality(self, reference_df: Optional[pd.DataFrame] = None) -> bool:
@@ -136,9 +136,9 @@ class DataPipeline:
             output_path: Ruta donde guardar los datos
         """
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-        
+
         file_ext = Path(output_path).suffix.lower()
-        
+
         if file_ext == '.csv':
             self.data.to_csv(output_path, index=False)
         elif file_ext == '.parquet':
