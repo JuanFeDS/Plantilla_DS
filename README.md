@@ -2,6 +2,20 @@
 
 Plantilla para levantar proyectos de ciencia de datos con capas listas para datos, modelos, APIs y operaciones. En pocos minutos obtienes una base profesional, modular y ajustable mediante banderas de Cookiecutter.
 
+## 🚀 Inicio Rápido
+
+**Modo express** (acepta todos los valores por defecto):
+```bash
+cookiecutter gh:JuanFeA98/Plantilla_DS --no-input
+```
+
+**Modo interactivo** (personaliza 17 opciones):
+```bash
+cookiecutter gh:JuanFeA98/Plantilla_DS
+```
+
+> **Nota**: Si `cookiecutter` no está reconocido, usa `python -m cookiecutter` en su lugar.
+
 ---
 
 ## 📌 ¿Qué incluye?
