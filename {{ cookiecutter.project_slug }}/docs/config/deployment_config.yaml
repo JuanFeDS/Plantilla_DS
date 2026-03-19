@@ -1,0 +1,219 @@
+# Deployment Configuration
+# Configuración técnica para despliegue del modelo
+
+deployment:
+  environment: "production"  # development, staging, production
+  version: "1.0.0"
+  deployed_at: "2024-03-15T12:00:00Z"
+  deployed_by: "devops_team"
+
+# Configuración del servidor
+server:
+  type: "fastapi"  # fastapi, flask, django, sagemaker, etc.
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  timeout_seconds: 30
+  
+  # SSL/TLS
+  ssl_enabled: true
+  ssl_cert_path: "/etc/ssl/certs/model_api.crt"
+  ssl_key_path: "/etc/ssl/private/model_api.key"
+
+# Endpoints
+endpoints:
+  health_check:
+    path: "/health"
+    method: "GET"
+    
+  predict:
+    path: "/predict"
+    method: "POST"
+    max_batch_size: 100
+    
+  predict_proba:
+    path: "/predict_proba"
+    method: "POST"
+    max_batch_size: 100
+    
+  model_info:
+    path: "/model/info"
+    method: "GET"
+    
+  metrics:
+    path: "/metrics"
+    method: "GET"
+
+# Autenticación y autorización
+auth:
+  enabled: true
+  type: "api_key"  # api_key, oauth2, jwt
+  api_key_header: "X-API-Key"
+  
+  # Rate limiting
+  rate_limit:
+    enabled: true
+    requests_per_minute: 1000
+    requests_per_hour: 50000
+
+# Configuración de contenedor
+container:
+  image: "registry.empresa.com/ml-models/churn-predictor:1.0.0"
+  base_image: "python:3.11-slim"
+  
+  # Recursos
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
+  
+  # Health checks
+  health_check:
+    liveness_probe:
+      path: "/health"
+      initial_delay_seconds: 30
+      period_seconds: 10
+      timeout_seconds: 5
+      failure_threshold: 3
+    
+    readiness_probe:
+      path: "/ready"
+      initial_delay_seconds: 10
+      period_seconds: 5
+      timeout_seconds: 3
+
+# Escalado automático
+autoscaling:
+  enabled: true
+  min_replicas: 2
+  max_replicas: 10
+  
+  metrics:
+    - type: "cpu"
+      target_utilization: 70
+    - type: "memory"
+      target_utilization: 80
+    - type: "requests_per_second"
+      target_value: 500
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "json"
+  
+  destinations:
+    - type: "stdout"
+    - type: "file"
+      path: "/var/log/model/predictions.log"
+      rotation: "daily"
+      retention_days: 30
+    - type: "elasticsearch"
+      host: "elasticsearch.empresa.com:9200"
+      index: "ml-predictions"
+
+# Monitoreo
+monitoring:
+  enabled: true
+  
+  # Prometheus
+  prometheus:
+    enabled: true
+    port: 9090
+    path: "/metrics"
+  
+  # Métricas personalizadas
+  custom_metrics:
+    - name: "prediction_latency"
+      type: "histogram"
+      buckets: [0.01, 0.05, 0.1, 0.5, 1.0, 2.0, 5.0]
+    
+    - name: "prediction_count"
+      type: "counter"
+      labels: ["model_version", "prediction_class"]
+    
+    - name: "model_confidence"
+      type: "histogram"
+      buckets: [0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99]
+
+# Alertas
+alerts:
+  channels:
+    - type: "slack"
+      webhook_url: "${SLACK_WEBHOOK_URL}"
+      channel: "#ml-alerts"
+    
+    - type: "email"
+      recipients: ["ml-team@empresa.com"]
+  
+  rules:
+    - name: "high_error_rate"
+      condition: "error_rate > 5%"
+      severity: "critical"
+      window: "5m"
+    
+    - name: "high_latency"
+      condition: "p95_latency > 1000ms"
+      severity: "warning"
+      window: "10m"
+    
+    - name: "low_confidence_predictions"
+      condition: "avg_confidence < 0.7"
+      severity: "warning"
+      window: "1h"
+
+# Variables de entorno requeridas
+environment_variables:
+  required:
+    - MODEL_PATH
+    - DB_CONNECTION_STRING
+    - API_KEY_SECRET
+  
+  optional:
+    - FEATURE_STORE_URL
+    - CACHE_ENABLED
+    - DEBUG_MODE
+
+# Rollback
+rollback:
+  enabled: true
+  previous_version: "0.9.5"
+  automatic_rollback_conditions:
+    - "error_rate > 10%"
+    - "p99_latency > 5000ms"
+    - "health_check_failures > 5"
+
+# Backup y recuperación
+backup:
+  enabled: true
+  frequency: "daily"
+  retention_days: 30
+  storage:
+    type: "s3"
+    bucket: "ml-model-backups"
+    path: "churn-predictor/"
+
+# Seguridad
+security:
+  # Secrets management
+  secrets_provider: "vault"  # vault, aws_secrets_manager, azure_key_vault
+  
+  # Network policies
+  network_policies:
+    ingress:
+      - from: "api-gateway"
+        port: 8000
+    
+    egress:
+      - to: "database"
+        port: 5432
+      - to: "feature-store"
+        port: 443
+  
+  # Escaneo de vulnerabilidades
+  vulnerability_scanning:
+    enabled: true
+    frequency: "weekly"
+    fail_on_critical: true

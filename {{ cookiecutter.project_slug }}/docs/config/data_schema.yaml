@@ -1,0 +1,169 @@
+# Data Schema & Quality Expectations
+# Siguiendo estándares de Great Expectations
+# Define el schema esperado y validaciones automáticas
+
+dataset_name: "nombre_dataset"
+version: "1.0.0"
+last_updated: "2024-03-15"
+
+# Schema de columnas
+columns:
+  id_cliente:
+    type: "integer"
+    nullable: false
+    unique: true
+    description: "Identificador único del cliente"
+    
+  edad:
+    type: "integer"
+    nullable: false
+    min: 18
+    max: 99
+    description: "Edad del cliente en años"
+    
+  genero:
+    type: "string"
+    nullable: true
+    allowed_values: ["M", "F", "Otro", "No especificado"]
+    description: "Género del cliente"
+    
+  ingreso_mensual:
+    type: "float"
+    nullable: true
+    min: 0
+    max: 1000000
+    description: "Ingreso mensual estimado en moneda local"
+    
+  fecha_registro:
+    type: "date"
+    nullable: false
+    format: "YYYY-MM-DD"
+    min_date: "2020-01-01"
+    description: "Fecha de registro del cliente"
+    
+  score_crediticio:
+    type: "integer"
+    nullable: true
+    min: 300
+    max: 850
+    description: "Score crediticio del cliente"
+    
+  num_productos:
+    type: "integer"
+    nullable: false
+    min: 0
+    max: 10
+    description: "Número de productos contratados"
+    
+  antiguedad_meses:
+    type: "integer"
+    nullable: false
+    min: 0
+    description: "Antigüedad del cliente en meses"
+    
+  target:
+    type: "integer"
+    nullable: false
+    allowed_values: [0, 1]
+    description: "Variable objetivo (0: no churn, 1: churn)"
+
+# Validaciones de calidad de datos
+quality_checks:
+  # Completitud
+  completeness:
+    max_missing_percentage:
+      id_cliente: 0.0
+      edad: 0.0
+      fecha_registro: 0.0
+      ingreso_mensual: 15.0  # Permitir hasta 15% missing
+      score_crediticio: 20.0
+      target: 0.0
+  
+  # Unicidad
+  uniqueness:
+    - column: "id_cliente"
+      must_be_unique: true
+  
+  # Distribución esperada
+  distribution:
+    edad:
+      mean_range: [35, 45]
+      std_range: [10, 15]
+    
+    target:
+      class_balance:
+        min_class_0_percentage: 60
+        max_class_0_percentage: 80
+  
+  # Valores atípicos
+  outliers:
+    ingreso_mensual:
+      method: "IQR"
+      max_outlier_percentage: 5.0
+    
+    edad:
+      method: "z_score"
+      threshold: 3.0
+  
+  # Consistencia temporal
+  temporal:
+    fecha_registro:
+      must_be_past: true
+      max_days_in_future: 0
+  
+  # Relaciones entre columnas
+  relationships:
+    - rule: "antiguedad_meses >= 0"
+      description: "Antigüedad no puede ser negativa"
+    
+    - rule: "num_productos >= 0"
+      description: "Número de productos no puede ser negativo"
+
+# Transformaciones esperadas
+transformations:
+  - name: "imputacion_ingreso_mensual"
+    type: "imputation"
+    method: "median_by_group"
+    group_by: ["edad_bin"]
+    
+  - name: "encoding_genero"
+    type: "encoding"
+    method: "label_encoding"
+    mapping:
+      M: 0
+      F: 1
+      Otro: 2
+      No especificado: 3
+  
+  - name: "feature_engineering_edad_bin"
+    type: "binning"
+    source_column: "edad"
+    bins: [18, 25, 35, 45, 55, 65, 100]
+    labels: ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"]
+
+# Alertas y umbrales
+alerts:
+  critical:
+    - condition: "missing_percentage > 50%"
+      action: "block_pipeline"
+      notify: ["data_engineer@empresa.com"]
+    
+    - condition: "duplicate_ids > 0"
+      action: "block_pipeline"
+      notify: ["data_engineer@empresa.com"]
+  
+  warning:
+    - condition: "missing_percentage > 20%"
+      action: "log_warning"
+      notify: ["data_scientist@empresa.com"]
+    
+    - condition: "class_imbalance > 90%"
+      action: "log_warning"
+      notify: ["data_scientist@empresa.com"]
+
+# Metadatos de validación
+validation_metadata:
+  last_validation_date: "2024-03-15T10:00:00Z"
+  validation_frequency: "daily"
+  validation_tool: "great_expectations"
+  validation_suite: "data_quality_suite_v1"
