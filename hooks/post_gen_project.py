@@ -14,6 +14,7 @@ PACKAGE_MANAGER = "{{ cookiecutter.package_manager }}".lower()
 INCLUDE_FASTAPI = "{{ cookiecutter.include_fastapi }}" == "y"
 INCLUDE_NOTEBOOKS = "{{ cookiecutter.include_notebooks }}" == "y"
 INCLUDE_DOCS = "{{ cookiecutter.include_docs }}" == "y"
+INCLUDE_SCRIPTS = "{{ cookiecutter.include_scripts }}" == "y"
 INCLUDE_SLACK = "{{ cookiecutter.include_slack_notifications }}" == "y"
 USE_DOCKER = "{{ cookiecutter.use_docker }}" == "y"
 
@@ -68,6 +69,12 @@ def remove_optional_modules():
         if docs_path.exists():
             shutil.rmtree(docs_path)
             print(f'{MESSAGE_COLOR}   • Documentación removida{RESET_ALL}')
+
+    if not INCLUDE_SCRIPTS:
+        scripts_path = Path('scripts')
+        if scripts_path.exists():
+            shutil.rmtree(scripts_path)
+            print(f'{MESSAGE_COLOR}   • Scripts CLI removidos{RESET_ALL}')
 
     if not INCLUDE_SLACK:
         slack_path = Path('src/notifications/slack.py')
